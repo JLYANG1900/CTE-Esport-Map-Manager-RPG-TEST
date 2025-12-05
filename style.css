@@ -2,7 +2,6 @@
 /* --- CTE Esport Map 样式表 (v2.1 行程终端整合版) --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@400;700&family=Zhi+Mang+Xing&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 #cte-esport-root {
     --cte-bg-dark: #121212;
@@ -1298,4 +1297,5 @@
     0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
     70% { box-shadow: 0 0 0 6px rgba(236, 72, 153, 0); }
     100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+
 }
