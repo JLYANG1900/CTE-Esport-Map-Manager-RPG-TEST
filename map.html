@@ -1,0 +1,596 @@
+<div id="cte-esport-root">
+    <div id="cte-esport-panel">
+        <!-- 1. 标题栏 -->
+        <div class="cte-esport-header">
+            <h2 class="cte-esport-title">CTE E-SPORTS MAP</h2>
+            <div class="cte-esport-controls">
+                <!-- 战队经理按钮 -->
+                <button class="cte-esport-icon-btn" id="cte-btn-manager" title="战队管理终端">🎮</button>
+                
+                <!-- 新增：心跳管理按钮 -->
+                <button class="cte-esport-icon-btn" id="cte-btn-heartbeat" title="心跳/活动管理" style="color: #FF69B4; border-color: #FF69B4;">
+                    <i class="fa-solid fa-heart"></i>
+                </button>
+
+                <!-- 新增：返回地图按钮 -->
+                <button class="cte-esport-icon-btn" id="cte-btn-map-home" title="返回地图">🗺️</button>
+
+                <button class="cte-esport-icon-btn" id="cte-btn-reset-bg" title="恢复原始背景">🔄</button>
+                <label for="cte-bg-upload" class="cte-esport-icon-btn" title="更换地图背景" style="display:flex; align-items:center; justify-content:center;">🖼️</label>
+                <input type="file" id="cte-bg-upload" accept="image/*" style="display: none;">
+                
+                <button class="cte-esport-icon-btn" id="cte-btn-theme" title="切换主题">🎨</button>
+                <button class="cte-esport-icon-btn" id="cte-btn-close" title="关闭">✕</button>
+            </div>
+        </div>
+
+        <!-- 2. 主体区域 (层叠) -->
+        <div class="cte-esport-body">
+            
+            <!-- Layer A: 京港市地图层 (默认显示) -->
+            <div class="cte-esport-scroll-layer" id="cte-layer-map">
+                <div class="cte-esport-map-canvas" id="cte-map-canvas">
+                    <!-- 地标点 -->
+                    <div class="cte-esport-pin" id="cte-pin-base" style="left: 400px; top: 400px;" data-popup="popup-cte">
+                        <div class="cte-esport-pin-label">CTE战队基地</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 600px; top: 480px;" data-popup="popup-baibu">
+                        <div class="cte-esport-pin-label">百步街</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 700px; top: 720px;" data-popup="popup-snack">
+                        <div class="cte-esport-pin-label">小吃街</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 650px; top: 320px;" data-popup="popup-wanda">
+                        <div class="cte-esport-pin-label">万达广场</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 700px; top: 400px;" data-popup="popup-aurora">
+                        <div class="cte-esport-pin-label">极光电竞馆</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 150px; top: 500px;" data-popup="popup-netbar">
+                        <div class="cte-esport-pin-label">星夜网吧</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 400px; top: 100px;" data-popup="popup-park">
+                        <div class="cte-esport-pin-label">蓝海公园</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 80px; top: 400px;" data-popup="popup-wancheng">
+                        <div class="cte-esport-pin-label">万城娱乐总部</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 100px; top: 100px;" data-popup="popup-nightmarket">
+                        <div class="cte-esport-pin-label">老街区夜市</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 700px; top: 100px;" data-popup="popup-school">
+                        <div class="cte-esport-pin-label">京港第三高中</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 100px; top: 700px;" data-popup="popup-library">
+                        <div class="cte-esport-pin-label">城市图书馆</div>
+                    </div>
+                     <div class="cte-esport-pin" style="left: 180px; top: 680px;" data-popup="popup-hotel">
+                        <div class="cte-esport-pin-label">电竞酒店</div>
+                    </div>
+                    <div class="cte-esport-pin" style="left: 600px; top: 650px;" data-popup="popup-custom">
+                        <div class="cte-esport-pin-label">其他地点</div>
+                    </div>
+                </div>
+                
+                <!-- 前往外部大地图按钮 (悬浮在京港市地图上) -->
+                <div class="cte-go-national-btn-container">
+                    <button class="cte-go-national-btn" id="cte-btn-go-national">
+                        🌏 前往外部大地图
+                    </button>
+                </div>
+            </div>
+
+            <!-- Layer B: 国家地图层 (默认隐藏) -->
+            <div class="cte-esport-scroll-layer cte-national-scroll-layer" id="cte-layer-national-map" style="display:none;">
+                <div class="cte-national-container">
+                    <!-- 国家地图标题区 -->
+                    <div class="cte-national-header">
+                        <h1 class="cte-national-title">京港之外的世界</h1>
+                        <p class="cte-national-subtitle">这是一个现代架空都市世界观</p>
+                    </div>
+                    
+                    <!-- 国家地图画布 -->
+                    <div class="cte-national-map-canvas" id="cte-national-map-canvas">
+                        <!-- 城市图标将由 JS 动态生成 -->
+                        <div class="cte-national-cities"></div>
+                    </div>
+                    
+                    <!-- 情报面板 -->
+                    <div class="cte-national-info-panel">
+                        <div id="cte-national-info-content">
+                            <h2><i class="fa-solid fa-map-location-dot"></i> 城市简介</h2>
+                            <p>请点击地图上的城市图标以获取详细情报...<br><span style="color: var(--cte-accent-gold);">💡 点击"京港"可返回京港市地图</span></p>
+                        </div>
+                        <!-- 前往按钮 (动态显示) -->
+                        <button class="cte-national-go-btn" id="cte-national-go-btn" style="display:none;">
+                            🚀 前往
+                        </button>
+                    </div>
+                    
+                    <!-- 控制按钮组 -->
+                    <div class="cte-national-controls">
+                        <button class="cte-action-btn" id="cte-btn-back-to-city">🏙️ 返回京港市</button>
+                        <label for="cte-national-bg-upload" class="cte-action-btn" style="cursor:pointer;">🖼️ 上传背景</label>
+                        <input type="file" id="cte-national-bg-upload" accept="image/*" style="display:none;">
+                        <button class="cte-action-btn" id="cte-btn-reset-national-bg">🔄 恢复默认</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer C: 心跳管理层 (独立粉色风格) -->
+            <div class="cte-esport-scroll-layer" id="cte-layer-heartbeat" style="display:none;">
+                <div class="cte-hb-container">
+                    <div class="cte-hb-header">
+                        <h1><i class="fa-solid fa-heart"></i> 色情活动管理界面 <i class="fa-solid fa-heart"></i></h1>
+                    </div>
+                    <div class="cte-hb-content">
+                        <div class="cte-hb-section-title">
+                            <i class="fa-solid fa-calendar-days"></i> 可安排的私密活动
+                        </div>
+                        <div class="cte-hb-grid" id="cte-hb-activity-grid">
+                            <!-- JS Generated Activities -->
+                        </div>
+                        <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #888;">还是不够吗？更多PLAY等待更新！ <i class="fa-solid fa-face-wink"></i></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Layer D: 电竞经理终端层 -->
+            <div class="cte-esport-scroll-layer" id="cte-layer-manager" style="display:none; background:#000;">
+                <div class="cte-rpg-container">
+                    <!-- 1. 侧边栏 -->
+                    <div class="cte-rpg-sidebar">
+                        <div class="cte-rpg-logo"><span>G</span></div>
+                        <button class="cte-rpg-nav-btn active" data-mode="TERMINAL" title="终端/行程"><i class="fa-solid fa-terminal"></i></button>
+                        <button class="cte-rpg-nav-btn" data-mode="CLUB" title="运营"><i class="fa-solid fa-building"></i></button>
+                        <button class="cte-rpg-nav-btn" data-mode="ROSTER" title="阵容"><i class="fa-solid fa-users"></i></button>
+                        <button class="cte-rpg-nav-btn" data-mode="TACTICS" title="战术"><i class="fa-solid fa-chess-board"></i></button>
+                        <button class="cte-rpg-nav-btn" data-mode="LEAGUE" title="联赛"><i class="fa-solid fa-trophy"></i></button>
+                    </div>
+                    
+                    <!-- 2. 主内容区 -->
+                    <div class="cte-rpg-main">
+                        <!-- 顶部 HUD -->
+                        <div class="cte-rpg-hud">
+                            <div style="font-family:'Cinzel',serif; font-weight:bold; color:var(--cte-accent-gold); letter-spacing:2px;">CTE OS v10.1</div>
+                            <div class="cte-rpg-res-group">
+                                <div class="cte-rpg-res-item">
+                                    <div class="cte-rpg-res-icon" style="color:#DDB753"><i class="fa-solid fa-coins"></i></div>
+                                    <div><span class="cte-rpg-res-val">2.4M</span><span class="cte-rpg-res-label">资金</span></div>
+                                </div>
+                                <div class="cte-rpg-res-item">
+                                    <div class="cte-rpg-res-icon" style="color:#F472B6"><i class="fa-solid fa-heart"></i></div>
+                                    <div><span class="cte-rpg-res-val">824K</span><span class="cte-rpg-res-label">粉丝数</span></div>
+                                </div>
+                                <div class="cte-rpg-res-item">
+                                    <div class="cte-rpg-res-icon" style="color:#60A5FA"><i class="fa-solid fa-fire"></i></div>
+                                    <div><span class="cte-rpg-res-val">High</span><span class="cte-rpg-res-label">士气</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 视图内容容器 -->
+                        <div id="cte-rpg-content-area" style="flex:1; position:relative; overflow:hidden;">
+                            
+                            <!-- 视图 1: Terminal (现在包含行程表) -->
+                            <div class="cte-rpg-view cte-rpg-terminal-wrapper" id="cte-rpg-view-terminal" style="display:flex;">
+                                <div id="cte-schedule-log-container" class="cte-timeline" style="border:none; padding:20px;">
+                                    <!-- 行程数据将通过JS生成在此处 -->
+                                </div>
+                                <div class="cte-rpg-input-area" style="justify-content: flex-end;">
+                                    <button id="cte-btn-refresh-schedule-term" class="cte-action-btn" style="width: auto; padding: 5px 20px;">
+                                        🔄 刷新最新行程数据
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 视图 2: Club -->
+                            <div class="cte-rpg-view" id="cte-rpg-view-club">
+                                <h2 style="font-family:'Playfair Display'; color:var(--cte-accent-gold); border-bottom:1px solid #333; padding-bottom:10px;">Club Operations</h2>
+                                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px; margin-top:20px;">
+                                    <div class="cte-rpg-card" style="height:200px; display:flex; align-items:center; justify-content:center; color:#666;">
+                                        [战队运营功能开发中...]
+                                    </div>
+                                    <div class="cte-rpg-card">
+                                        <h3 style="font-size:14px; color:#fff;">Sponsors</h3>
+                                        <ul style="list-style:none; padding:0; margin-top:10px; font-size:12px; color:#ccc;">
+                                            <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.1);">万城娱乐 <span style="float:right; color:var(--cte-accent-gold);">TITLE</span></li>
+                                            <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.1);">盛华集团 <span style="float:right; color:#ffd700;">GOLD</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 视图 3: Roster -->
+                            <div class="cte-rpg-view" id="cte-rpg-view-roster">
+                                <h2 style="font-family:'Playfair Display'; color:var(--cte-accent-gold); border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:20px;">Active Roster</h2>
+                                <div id="cte-rpg-roster-grid" class="cte-rpg-roster-grid">
+                                    <!-- JS Generated -->
+                                </div>
+                            </div>
+
+                            <!-- 视图 4: Tactics -->
+                            <div class="cte-rpg-view" id="cte-rpg-view-tactics">
+                                <h2 style="font-family:'Playfair Display'; color:var(--cte-accent-gold);">Tactical Room</h2>
+                                <p style="color: #666; font-size:12px; margin-top:5px;">BP SIMULATION // RESEARCH</p>
+                                <div class="cte-rpg-card" style="margin-top:20px; padding:30px; text-align:center;">
+                                    <i class="fa-solid fa-chess-board" style="font-size:40px; color:#333; margin-bottom:10px;"></i>
+                                    <p>战术板功能正在开发中...</p>
+                                </div>
+                            </div>
+                            
+                            <!-- 视图 5: League (Updated) -->
+                            <div class="cte-rpg-view" id="cte-rpg-view-league">
+                                <h2 style="font-family:'Playfair Display'; color:var(--cte-accent-gold);">Season Schedule</h2>
+                                <!-- 动态内容容器 -->
+                                <div class="cte-rpg-card" style="margin-top:20px;">
+                                    <div id="cte-league-content" style="padding:15px; color:#ccc; line-height:1.6; font-family:'Inter', sans-serif;">
+                                        Loading Schedule...
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 顶层：UI 弹窗层 -->
+            <div class="cte-esport-ui-layer" id="cte-ui-layer">
+                
+                <!-- 弹窗：CTE 基地 -->
+                <div class="cte-esport-popup" id="popup-cte">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">CTE 战队基地</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-popup-content">
+                        <p>坐标核心：由独立别墅改造的现代建筑，外墙印有巨型CTE战队标识。</p>
+                        <img src="https://files.catbox.moe/t0f84b.png" alt="Base">
+                        <div style="display:flex; gap:10px;">
+                            <button class="cte-action-btn" data-action="interior" style="flex:1;">📂 查看内部布局</button>
+                            <button class="cte-action-btn" data-travel="CTE战队基地" style="flex:1;">🚀 前往此处</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 弹窗：基地内部 -->
+                <div class="cte-esport-popup" id="popup-interior">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">基地内部档案</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-popup-content" style="display: flex; flex-direction: column;">
+                        
+                        <div style="width: 100%; margin-bottom: 20px;">
+                            <img src="https://files.catbox.moe/lhw7xk.png" alt="FloorPlan" style="width:100%;">
+                            <button class="cte-action-btn" data-action="back-base" style="margin-top: 5px; font-size: 12px; padding: 5px;">⬅ 返回外观</button>
+                        </div>
+
+                        <div class="cte-floor-group" style="width: 100%; margin-top: 0;">
+                            <p style="font-size:12px; color:var(--cte-text-sub); text-align:left; border-bottom: 1px solid var(--cte-border-color); padding-bottom: 5px; margin-bottom: 10px;">楼层导航 (点击展开)</p>
+
+                            <button class="cte-floor-btn" data-target="f-roof">☁️ 顶楼：休闲天台</button>
+                            <div class="cte-floor-panel" id="f-roof">
+                                <span class="cte-room-tag" data-travel="CTE基地-顶楼天台">顶楼天台</span>
+                            </div>
+
+                            <button class="cte-floor-btn" data-target="f5">🛏️ 五层：居住区 (点击查看资料)</button>
+                            <div class="cte-floor-panel" id="f5">
+                                <span class="cte-room-tag" data-profile="wei_yuehua">魏月华</span>
+                                <span class="cte-room-tag" data-profile="qin_shu">秦述</span>
+                                <span class="cte-room-tag" data-profile="si_luo">司洛</span>
+                                <span class="cte-room-tag" data-profile="lu_yan">鹿言</span>
+                                <span class="cte-room-tag" data-profile="wei_xingze">魏星泽</span>
+                                <span class="cte-room-tag" data-profile="zhou_jinning">周锦宁</span>
+                                <span class="cte-room-tag" data-profile="chen_xu">谌绪</span>
+                                <span class="cte-room-tag" data-profile="meng_minghe">孟明赫</span>
+                                <span class="cte-room-tag" data-profile="qi_xie">亓谢</span>
+                                <span class="cte-room-tag" data-profile="sang_luofan">桑洛凡</span>
+                                <span class="cte-room-tag" data-profile="user" style="border-color: var(--cte-accent-gold); color:var(--cte-accent-gold);">你的房间</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-五楼休憩区">公共休憩区</span>
+                            </div>
+
+                            <button class="cte-floor-btn" data-target="f4">💪 四层：康复与健身</button>
+                            <div class="cte-floor-panel" id="f4">
+                                <span class="cte-room-tag" data-travel="CTE基地-健身房">健身房</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-瑜伽室">瑜伽室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-理疗室">按摩理疗室</span>
+                            </div>
+
+                            <button class="cte-floor-btn" data-target="f3">🖥️ 三层：训练区</button>
+                            <div class="cte-floor-panel" id="f3">
+                                <span class="cte-room-tag" data-travel="CTE基地-主训练室">主训练室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-副训练室">副训练室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-战术会议室">战术会议室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-选手休息室">选手休息室</span>
+                            </div>
+
+                            <button class="cte-floor-btn" data-target="f2">📹 二层：运营与内容</button>
+                            <div class="cte-floor-panel" id="f2">
+                                <span class="cte-room-tag" data-travel="CTE基地-采访室">采访室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-直播间">直播间</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-创作室">创作工作室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-教练办公室">教练办公室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-经理办公室">经理办公室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-观赛区">观赛区</span>
+                            </div>
+
+                            <button class="cte-floor-btn" data-target="f1">🛋️ 一层：生活区</button>
+                            <div class="cte-floor-panel" id="f1">
+                                <span class="cte-room-tag" data-travel="CTE基地-前院">前院花园</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-大厅">接待大厅</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-餐厅">餐厅/厨房</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-洗衣房">洗衣房</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-医务室">医务室</span>
+                                <span class="cte-room-tag" data-travel="CTE基地-后院">后院泳池</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 其他地点弹窗 -->
+                <div class="cte-esport-popup" id="popup-baibu">
+                    <div class="cte-popup-header"><span>百步街</span><span class="cte-close-btn">×</span></div>
+                    <ul class="cte-loc-list">
+                        <li class="cte-loc-item" data-travel="猫咪咖啡馆"><strong>🐱 猫咪咖啡馆</strong><span> - 附近有宠物医院</span></li>
+                        <li class="cte-loc-item" data-travel="老张文具店"><strong>🖊️ 老张文具店</strong><span> - 旧时光的记忆</span></li>
+                        <li class="cte-loc-item" data-travel="老字号面馆"><strong>🍜 老字号面馆</strong><span> - 选手早餐首选</span></li>
+                        <li class="cte-loc-item" data-travel="花间茶社"><strong>🍵 花间茶社</strong><span> - 适合谈话下棋</span></li>
+                        <li class="cte-loc-item" data-travel="404便利店"><strong>🏪 404便利店</strong><span> - 24小时营业</span></li>
+                    </ul>
+                </div>
+                <div class="cte-esport-popup" id="popup-wanda">
+                    <div class="cte-popup-header"><span>万达广场</span><span class="cte-close-btn">×</span></div>
+                    <ul class="cte-loc-list">
+                        <li class="cte-loc-item" data-travel="CGV影城"><strong>🎬 CGV影城</strong></li>
+                        <li class="cte-loc-item" data-travel="海底捞火锅"><strong>🍲 海底捞火锅</strong><span> - 聚餐热门</span></li>
+                        <li class="cte-loc-item" data-travel="电玩城"><strong>🎮 电玩城</strong></li>
+                        <li class="cte-loc-item" data-travel="星光书店"><strong>📖 星光书店</strong><span> - 2F 咖啡阅读区</span></li>
+                        <li class="cte-loc-item" data-travel="潮玩集合店"><strong>🧸 潮玩集合店</strong><span> - 1F</span></li>
+                        <li class="cte-loc-item" data-travel="星空天台酒吧"><strong>🥂 星空天台酒吧</strong><span> - 顶层</span></li>
+                        <li class="cte-loc-item" data-travel="健身俱乐部"><strong>🏋️ 健身俱乐部</strong></li>
+                    </ul>
+                </div>
+                <div class="cte-esport-popup" id="popup-snack">
+                    <div class="cte-popup-header"><span>小吃街</span><span class="cte-close-btn">×</span></div>
+                    <ul class="cte-loc-list">
+                        <li class="cte-loc-item" data-travel="老王烧烤"><strong>🍖 老王烧烤</strong></li>
+                        <li class="cte-loc-item" data-travel="糖葫芦摊"><strong>🍡 糖葫芦摊</strong></li>
+                        <li class="cte-loc-item" data-travel="麻辣烫小店"><strong>🍲 麻辣烫小店</strong></li>
+                        <li class="cte-loc-item" data-travel="甜品屋"><strong>🍰 甜品屋</strong></li>
+                        <li class="cte-loc-item" data-travel="be drunk酒吧"><strong>🍸 be drunk酒吧</strong></li>
+                    </ul>
+                    <button class="cte-action-btn" data-travel="小吃街">🚀 前往小吃街路口</button>
+                </div>
+                <div class="cte-esport-popup" id="popup-aurora">
+                    <div class="cte-popup-header"><span>极光电竞馆</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>大型电竞场馆，定期举办小型赛事。CTE战队有时在此进行公开训练。</p>
+                        <button class="cte-action-btn" data-travel="极光电竞馆">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-netbar">
+                    <div class="cte-popup-header"><span>星夜网吧</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>步行5分钟可达的高端网吧，配置顶级。司洛是这里的常客。</p>
+                        <button class="cte-action-btn" data-travel="星夜网吧">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-park">
+                    <div class="cte-popup-header"><span>蓝海公园</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>基地北侧的静谧湖畔公园，秦述常在此晨跑。</p>
+                        <button class="cte-action-btn" data-travel="蓝海公园">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-wancheng">
+                    <div class="cte-popup-header"><span>万城娱乐总部</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>距基地2公里。掌控着战队的商业命脉。</p>
+                        <button class="cte-action-btn" data-travel="万城娱乐总部">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-nightmarket">
+                    <div class="cte-popup-header"><span>老街区夜市</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>传统夜市，拥有浓郁的本土生活气息。</p>
+                        <button class="cte-action-btn" data-travel="老街区夜市">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-school">
+                    <div class="cte-popup-header"><span>京港第三高中</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>省重点高中，谌绪就读地。充满青春气息与书卷气。</p>
+                        <button class="cte-action-btn" data-travel="京港第三高中">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-library">
+                    <div class="cte-popup-header"><span>城市图书馆</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>现代化图书馆，内设电竞文化专区，安静学习的好去处。</p>
+                        <button class="cte-action-btn" data-travel="城市图书馆">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-hotel">
+                    <div class="cte-popup-header"><span>电竞酒店</span><span class="cte-close-btn">×</span></div>
+                    <div class="cte-popup-content">
+                        <p>设有电竞主题客房及观赛厅，常有外地粉丝与职业选手造访。</p>
+                        <button class="cte-action-btn" data-travel="电竞酒店">🚀 前往</button>
+                    </div>
+                </div>
+                <div class="cte-esport-popup" id="popup-custom">
+                    <div class="cte-popup-header"><span>自定义地点</span><span class="cte-close-btn">×</span></div>
+                    <input type="text" id="cte-custom-input" placeholder="输入你想去的地方..." style="width:100%; padding:10px; margin-bottom:10px; background:#333; border:1px solid #555; color:#fff;">
+                    <button class="cte-action-btn" id="cte-btn-custom-go">🚀 出发</button>
+                </div>
+
+                <!-- 参与人员选择弹窗 -->
+                <div class="cte-esport-popup" id="cte-participant-modal" style="width: 400px; z-index: 2000;">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">选择同行人员</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-popup-content">
+                        <p style="color:var(--cte-text-sub); margin-bottom:10px;">请勾选参与此行程的人员：</p>
+                        <div id="cte-participant-list" class="cte-participant-grid">
+                            <!-- JS will populate checklist -->
+                        </div>
+                        
+                        <div style="margin-top:15px; padding-top:10px; border-top:1px solid var(--cte-border-color);">
+                            <input type="text" id="cte-custom-participant" placeholder="其他人员 (如: 工作人员)..." 
+                                   style="width:100%; padding:8px; background:rgba(0,0,0,0.2); border:1px solid var(--cte-border-color); color:#fff; border-radius:3px;">
+                        </div>
+
+                        <button class="cte-action-btn" id="cte-confirm-participants">📍 选择地点并出发</button>
+                    </div>
+                </div>
+
+                <!-- 确认行程弹窗 -->
+                <div class="cte-esport-popup" id="cte-travel-modal" style="width: 350px;">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">确认行程</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-popup-content" style="text-align: center;">
+                        <p style="color: var(--cte-text-sub); margin-bottom: 5px;">目的地</p>
+                        <h3 id="cte-travel-dest-name" style="color: var(--cte-accent-gold); margin: 0 0 15px 0; font-size: 1.5em;">Destination</h3>
+                        
+                        <!-- NPC 偶遇设置 -->
+                        <div class="cte-npc-config" style="text-align:left; background:rgba(255,255,255,0.05); padding:10px; border-radius:4px; margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <label style="font-size:13px; color:var(--cte-text-main);">是否要遇见<span id="cte-npc-placeholder-text">NPC</span>?</label>
+                                <div class="cte-toggle-group">
+                                    <input type="radio" name="meet_npc" id="meet_no" value="no" checked>
+                                    <label for="meet_no">否</label>
+                                    <input type="radio" name="meet_npc" id="meet_yes" value="yes">
+                                    <label for="meet_yes">是</label>
+                                </div>
+                            </div>
+                            <input type="text" id="cte-npc-input" placeholder="输入NPC名字..." 
+                                   style="width:100%; padding:8px; background:rgba(0,0,0,0.3); border:1px solid var(--cte-border-color); color:#fff; border-radius:3px; display:none;">
+                        </div>
+
+                        <!-- 模式 A: 普通模式 (独自/同伴) -->
+                        <div id="cte-travel-mode-standard">
+                            <button class="cte-action-btn" id="cte-travel-alone">👤 独自前往</button>
+                            <div style="margin: 20px 0; border-top: 1px solid var(--cte-border-color); position: relative;">
+                                <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--cte-panel-bg); padding: 0 10px; color: var(--cte-text-sub); font-size: 12px;">OR</span>
+                            </div>
+                            <div style="text-align: left;">
+                                <label style="font-size: 12px; color: var(--cte-text-sub);">邀请同伴：</label>
+                                <input type="text" id="cte-companion-input" placeholder="输入同伴名字 (如: 秦述)" 
+                                       style="width: 100%; padding: 10px; margin: 5px 0 10px 0; background: rgba(0,0,0,0.2); border: 1px solid var(--cte-border-color); color: var(--cte-text-main); border-radius: 4px; box-sizing: border-box;">
+                                <button class="cte-action-btn" id="cte-travel-companion">👥 邀请同伴前往</button>
+                            </div>
+                        </div>
+
+                        <!-- 模式 B: 行程执行模式 -->
+                        <div id="cte-travel-mode-schedule" style="display:none;">
+                            <div style="background: rgba(197, 160, 101, 0.1); border: 1px dashed var(--cte-accent-gold); padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: left;">
+                                <p style="font-size: 12px; color: var(--cte-accent-gold); margin-bottom: 5px;">📅 正在执行行程：</p>
+                                <p id="cte-schedule-preview-text" style="font-size: 13px; color: var(--cte-text-main); margin: 0; white-space: normal; line-height: 1.5;">...</p>
+                            </div>
+                            <button class="cte-action-btn" id="cte-travel-execute-schedule" style="background: var(--cte-accent-gold); color: #000;">✅ 确认执行行程</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 活动选择弹窗 -->
+                <div class="cte-esport-popup" id="cte-activity-modal" style="width: 450px;">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">选择活动内容</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-popup-content">
+                        <p style="font-size:13px; color:var(--cte-text-sub); margin-bottom:15px;">你想在这里做什么？</p>
+                        
+                        <div class="cte-activity-grid">
+                            <button class="cte-activity-btn" data-act="训练">🎮 训练</button>
+                            <button class="cte-activity-btn" data-act="开会">📝 开会</button>
+                            <button class="cte-activity-btn" data-act="购物">🛍️ 购物</button>
+                            <button class="cte-activity-btn" data-act="闲逛">🚶 闲逛</button>
+                            <button class="cte-activity-btn" data-act="吃饭">🍜 吃饭</button>
+                            <button class="cte-activity-btn" data-act="喝酒">🍺 喝酒</button>
+                            <button class="cte-activity-btn" data-act="约会">💕 约会</button>
+                            <button class="cte-activity-btn" data-act="做爱">🔞 做爱</button>
+                            <button class="cte-activity-btn" data-act="运动">🏃 运动</button>
+                            <button class="cte-activity-btn" data-act="直播">📹 直播</button>
+                            <button class="cte-activity-btn" data-act="拍摄节目">🎬 拍摄节目</button>
+                            <button class="cte-activity-btn" data-act="接受媒体采访">🎤 接受采访</button>
+                        </div>
+
+                        <div style="margin-top:20px; border-top:1px solid var(--cte-border-color); padding-top:15px;">
+                            <label style="font-size:12px; color:var(--cte-text-sub);">自定义活动：</label>
+                            <div style="display:flex; gap:10px; margin-top:5px;">
+                                <input type="text" id="cte-custom-act-input" placeholder="输入其他活动内容..." 
+                                    style="flex:1; padding:8px; background:rgba(0,0,0,0.2); border:1px solid var(--cte-border-color); color:var(--cte-text-main); border-radius:4px;">
+                                <button class="cte-action-btn" id="cte-confirm-custom-act" style="width:auto; margin:0; padding:0 15px;">确定</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 角色资料卡 -->
+                <div class="cte-esport-popup" id="cte-profile-modal">
+                    <div class="cte-popup-header">
+                        <span class="cte-popup-title">角色档案</span>
+                        <span class="cte-close-btn">×</span>
+                    </div>
+                    <div class="cte-profile-content">
+                        <!-- 头像区域 -->
+                        <div class="cte-profile-avatar-container">
+                            <div class="cte-profile-avatar-wrapper">
+                                <img id="cte-profile-img" src="" alt="Avatar">
+                                <!-- 玩家专属：上传按钮 -->
+                                <label for="cte-user-avatar-input" id="cte-avatar-upload-btn" title="上传头像">📷</label>
+                                <input type="file" id="cte-user-avatar-input" accept="image/*" style="display:none;">
+                            </div>
+                            <!-- 玩家专属：删除按钮 -->
+                             <button id="cte-avatar-delete-btn" title="删除头像">🗑️</button>
+                        </div>
+
+                        <!-- 信息区域 -->
+                        <div class="cte-profile-info">
+                            <h3 id="cte-profile-name">姓名</h3>
+                            <div class="cte-profile-grid">
+                                <div class="cte-profile-item">
+                                    <span class="label">年龄</span>
+                                    <span class="value" id="cte-profile-age">--</span>
+                                </div>
+                                <div class="cte-profile-item">
+                                    <span class="label">身份</span>
+                                    <span class="value" id="cte-profile-role">--</span>
+                                </div>
+                            </div>
+                            <div class="cte-profile-full-item">
+                                <span class="label">性格</span>
+                                <span class="value" id="cte-profile-personality">--</span>
+                            </div>
+                            <div class="cte-profile-desc" id="cte-profile-desc">
+                                房间描述文本...
+                            </div>
+                        </div>
+                    </div>
+                    <button class="cte-action-btn" id="cte-profile-go-btn">🚀 前往此处</button>
+                </div>
+
+                <!-- Heartbeat Specific Modal (Moved from Scroll Layer for correct positioning) -->
+                <div id="cte-hb-modal" class="cte-hb-modal">
+                    <div class="cte-hb-modal-content">
+                        <h2 id="cte-hb-modal-title" style="margin: 0 0 10px 0;">为活动 [活动名称] 分配成员</h2>
+                        <p style="color: #666; font-size: 0.9rem;">请选择要参与的成员（可多选）</p>
+                        <div class="cte-hb-member-list" id="cte-hb-member-list">
+                            <!-- JS Generated Members -->
+                        </div>
+                        <div style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+                            <button class="cte-hb-assign-button" id="cte-hb-confirm-btn">确认安排</button>
+                            <button class="cte-hb-close-button" id="cte-hb-cancel-btn">取消</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1301 @@
+
+/* --- CTE Esport Map 样式表 (v2.1 行程终端整合版) --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@400;700&family=Zhi+Mang+Xing&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+#cte-esport-root {
+    --cte-bg-dark: #121212;
+    --cte-panel-bg: #1e1e1e;
+    --cte-accent-gold: #c5a065;
+    --cte-text-main: #e0e0e0;
+    --cte-text-sub: #888;
+    --cte-border-color: #3d3d3d;
+    --cte-pin-bg: rgba(0, 0, 0, 0.85);
+    --cte-btn-text-hover: #000;
+    --cte-card-bg: rgba(255, 255, 255, 0.05);
+    --cte-scroll-layer-bg: #000000;
+    
+    /* RPG 新增变量 */
+    --cte-void-950: #050505;
+    --cte-void-900: #0A0A0A;
+    --cte-void-800: #121212;
+    --cte-gold-100: #F9F1D8;
+    --cte-gold-400: #DDB753;
+    --cte-gold-500: #D4AF37;
+    --cte-font-serif: 'Playfair Display', serif;
+    --cte-font-mono: 'JetBrains Mono', monospace;
+    --cte-font-display: 'Cinzel', serif;
+}
+
+/* 主面板 */
+#cte-esport-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vh;
+    height: 90vh;
+    max-width: 900px;
+    max-height: 900px;
+    background-color: var(--cte-bg-dark);
+    border: 2px solid var(--cte-accent-gold);
+    box-shadow: 0 0 50px rgba(0,0,0,0.9);
+    z-index: 2147483647;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Noto Serif SC', serif;
+    color: var(--cte-text-main);
+    border-radius: 8px;
+    opacity: 0;
+}
+
+/* 标题栏 */
+.cte-esport-header {
+    padding: 12px 20px;
+    background: var(--cte-panel-bg);
+    border-bottom: 1px solid var(--cte-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.cte-esport-title {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cte-accent-gold);
+    font-size: 1.4rem;
+    margin: 0;
+    letter-spacing: 2px;
+}
+
+.cte-esport-controls { display: flex; gap: 10px; }
+
+.cte-esport-icon-btn {
+    background: transparent;
+    border: 1px solid var(--cte-accent-gold);
+    color: var(--cte-accent-gold);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 16px;
+}
+.cte-esport-icon-btn:hover { background: var(--cte-accent-gold); color: var(--cte-btn-text-hover); }
+
+/* 主内容区 */
+.cte-esport-body {
+    position: relative;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    min-height: 0;
+}
+
+/* 滚动层 */
+.cte-esport-scroll-layer {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    background-color: var(--cte-scroll-layer-bg);
+    -webkit-overflow-scrolling: touch;
+}
+
+.cte-esport-scroll-layer::-webkit-scrollbar { width: 8px; height: 8px; }
+.cte-esport-scroll-layer::-webkit-scrollbar-track { background: var(--cte-bg-dark); }
+.cte-esport-scroll-layer::-webkit-scrollbar-thumb { background: var(--cte-border-color); border-radius: 4px; }
+
+/* 地图画布 */
+.cte-esport-map-canvas {
+    position: relative;
+    width: 800px;
+    height: 800px;
+    min-width: 800px;
+    min-height: 800px;
+    background-image: url('https://files.catbox.moe/b6p3mq.png'); 
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    margin: 0 auto;
+}
+
+/* 地标点 */
+.cte-esport-pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+.cte-esport-pin:hover { z-index: 50; transform: translate(-50%, -60%) scale(1.1); }
+
+.cte-esport-pin.dragging {
+    cursor: grabbing;
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+    transition: none;
+    z-index: 999;
+}
+
+.cte-esport-pin-label {
+    background-color: var(--cte-pin-bg);
+    border: 1px solid var(--cte-accent-gold);
+    color: var(--cte-accent-gold);
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    white-space: nowrap;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8);
+    font-weight: bold;
+    position: relative;
+    pointer-events: none;
+}
+
+.cte-esport-pin-label::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--cte-accent-gold);
+}
+
+#cte-pin-base .cte-esport-pin-label {
+    background-color: var(--cte-accent-gold);
+    color: #000;
+    border: 2px solid #fff;
+    font-size: 15px;
+}
+#cte-pin-base .cte-esport-pin-label::after {
+    border-top-color: #fff;
+}
+
+/* ========================================
+   前往外部大地图按钮
+======================================= */
+.cte-go-national-btn-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+}
+
+.cte-go-national-btn {
+    background: linear-gradient(135deg, rgba(197, 160, 101, 0.9), rgba(139, 109, 59, 0.9));
+    border: 2px solid var(--cte-accent-gold);
+    color: #fff;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(197, 160, 101, 0.5), 0 0 30px rgba(197, 160, 101, 0.3);
+    transition: all 0.3s ease;
+    animation: cte-pulse-glow 2s infinite;
+}
+
+.cte-go-national-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 30px rgba(197, 160, 101, 0.7), 0 0 40px rgba(197, 160, 101, 0.5);
+}
+
+@keyframes cte-pulse-glow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(197, 160, 101, 0.5), 0 0 30px rgba(197, 160, 101, 0.3); }
+    50% { box-shadow: 0 4px 25px rgba(197, 160, 101, 0.7), 0 0 40px rgba(197, 160, 101, 0.5); }
+}
+
+/* ========================================
+   国家地图层样式
+======================================== */
+.cte-national-scroll-layer {
+    background-color: #1a1a1a;
+    background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill-rule="evenodd"%3E%3Cg fill="%23303030" fill-opacity="0.4"%3E%3Cpath opacity=".5" d="M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+}
+
+.cte-national-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* 国家地图标题 */
+.cte-national-header {
+    text-align: center;
+    border-bottom: 1px solid var(--cte-accent-gold);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.cte-national-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: var(--cte-accent-gold);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(197, 160, 101, 0.5);
+}
+
+.cte-national-subtitle {
+    font-family: 'Zhi Mang Xing', cursive;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    color: #a0a0a0;
+    margin-top: 8px;
+    letter-spacing: 1px;
+}
+
+/* 国家地图画布 - 1:1比例锁定 */
+.cte-national-map-canvas {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* 1:1 Aspect Ratio */
+    background-color: #222;
+    border: 1px solid var(--cte-accent-gold);
+    overflow: hidden;
+    background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: cover; 
+    box-shadow: 0 0 30px rgba(0,0,0,0.5), inset 0 0 100px rgba(0,0,0,0.3);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cte-national-cities {
+    position: absolute;
+    inset: 0;
+}
+
+/* 国家地图城市图标 */
+.cte-national-city {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+    z-index: 10;
+    transform: translate(-50%, -50%);
+}
+
+.cte-national-city:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+    filter: drop-shadow(0 0 12px var(--cte-accent-gold));
+    z-index: 20;
+}
+
+.cte-national-city i {
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    color: var(--cte-accent-gold);
+    text-shadow: 0 0 8px var(--cte-accent-gold);
+    transition: all 0.3s ease;
+}
+
+.cte-national-city:hover i {
+    transform: scale(1.1);
+}
+
+.cte-national-city-name {
+    font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+    color: #dcdcdc;
+    background: rgba(0,0,0,0.8);
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-top: 5px;
+    white-space: nowrap;
+    border: 1px solid rgba(197, 160, 101, 0.3);
+}
+
+/* 首都特殊样式 */
+.cte-national-city.capital i {
+    color: #ffd700;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    text-shadow: 0 0 15px #ffd700, 0 0 30px rgba(255, 215, 0, 0.5);
+    animation: cte-capital-pulse 2s infinite;
+}
+
+.cte-national-city.capital .cte-national-city-name {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(197, 160, 101, 0.3));
+    border: 1px solid #ffd700;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+@keyframes cte-capital-pulse {
+    0%, 100% { text-shadow: 0 0 15px #ffd700, 0 0 30px rgba(255, 215, 0, 0.5); }
+    50% { text-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.7); }
+}
+
+/* 国家地图情报面板 */
+.cte-national-info-panel {
+    margin-top: 20px;
+    background: rgba(0,0,0,0.4);
+    border: 1px dashed var(--cte-accent-gold);
+    padding: 20px;
+    color: #ccc;
+    min-height: 120px;
+    border-radius: 4px;
+}
+
+.cte-national-info-panel h2 {
+    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    color: var(--cte-accent-gold);
+    margin: 0 0 12px 0;
+    border-bottom: 1px solid rgba(197, 160, 101, 0.3);
+    padding-bottom: 8px;
+}
+
+.cte-national-info-panel p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.cte-national-info-panel ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cte-national-info-panel li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.cte-national-info-panel li i {
+    color: var(--cte-accent-gold);
+    margin-right: 8px;
+}
+
+/* 国家地图前往按钮 */
+.cte-national-go-btn {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--cte-accent-gold), #8b6d3b);
+    border: none;
+    color: #000;
+    font-size: 1.1rem;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(197, 160, 101, 0.4);
+    animation: cte-go-btn-glow 1.5s infinite;
+}
+
+.cte-national-go-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(197, 160, 101, 0.6);
+}
+
+@keyframes cte-go-btn-glow {
+    0%, 100% { box-shadow: 0 4px 15px rgba(197, 160, 101, 0.4); }
+    50% { box-shadow: 0 4px 25px rgba(197, 160, 101, 0.7); }
+}
+
+/* 国家地图控制按钮组 */
+.cte-national-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cte-national-controls .cte-action-btn {
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+}
+
+/* 弹窗覆盖层 */
+.cte-esport-ui-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 弹窗本体 (默认样式) */
+.cte-esport-popup {
+    pointer-events: auto;
+    background-color: var(--cte-panel-bg);
+    border: 1px solid var(--cte-accent-gold);
+    border-left: 5px solid var(--cte-accent-gold);
+    padding: 25px;
+    width: 400px;
+    max-width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.9);
+    display: none;
+    animation: ctePopIn 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+#popup-cte, 
+#popup-interior {
+    width: 700px; 
+    max-width: 95%;
+}
+
+/* 角色资料卡样式 */
+#cte-profile-modal {
+    width: 600px;
+    max-width: 90%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    animation: ctePopInCentered 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    box-shadow: 0 0 100px rgba(0,0,0,1);
+    border-left: none;
+    border: 2px solid var(--cte-accent-gold);
+    background-color: rgba(30, 30, 30, 0.98);
+}
+
+.cte-esport-popup.active { display: block; }
+
+/* 动画 */
+@keyframes ctePopIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes ctePopInCentered {
+    from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 弹窗内部元素 */
+.cte-popup-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--cte-border-color);
+    padding-bottom: 10px;
+}
+.cte-popup-title { color: var(--cte-accent-gold); font-size: 1.2rem; font-weight: bold; font-family: 'Cormorant Garamond', serif; }
+.cte-close-btn { cursor: pointer; font-size: 1.5rem; line-height: 1; }
+.cte-popup-content img { width: 100%; border: 1px solid var(--cte-border-color); margin: 10px 0; }
+
+.cte-action-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid var(--cte-accent-gold);
+    color: var(--cte-accent-gold);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    font-family: 'Noto Serif SC', serif;
+}
+.cte-action-btn:hover { background: var(--cte-accent-gold); color: #000; }
+
+.cte-loc-list { list-style: none; padding: 0; }
+.cte-loc-item {
+    padding: 8px 10px;
+    border-left: 2px solid var(--cte-text-sub);
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+.cte-loc-item span { display: block; font-size: 0.8em; color: var(--cte-text-sub); margin-top: 2px; }
+.cte-loc-item:hover {
+    border-left-color: var(--cte-accent-gold);
+    background: var(--cte-accent-gold);
+    color: #000;
+}
+.cte-loc-item:hover span { color: rgba(0,0,0,0.7); }
+
+/* Toggle Switch Styles for NPC */
+.cte-toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+.cte-toggle-group input[type="radio"] {
+    display: none;
+}
+.cte-toggle-group label {
+    padding: 2px 8px;
+    border: 1px solid var(--cte-border-color);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--cte-text-sub);
+    transition: all 0.2s;
+}
+.cte-toggle-group input[type="radio"]:checked + label {
+    background-color: var(--cte-accent-gold);
+    color: #000;
+    border-color: var(--cte-accent-gold);
+    font-weight: bold;
+}
+
+/* Activity Grid Styles */
+.cte-activity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.cte-activity-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--cte-border-color);
+    color: var(--cte-text-main);
+    padding: 10px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.cte-activity-btn:hover {
+    border-color: var(--cte-accent-gold);
+    background: rgba(197, 160, 101, 0.1);
+}
+.cte-activity-btn.selected {
+    background: var(--cte-accent-gold);
+    color: #000;
+    border-color: var(--cte-accent-gold);
+}
+
+.cte-floor-group { margin-top: 15px; }
+.cte-floor-btn {
+    width: 100%;
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--cte-text-main);
+    text-align: left;
+    margin-top: 5px;
+    cursor: pointer;
+}
+.cte-floor-btn:hover { opacity: 0.8; }
+.cte-floor-btn.active {
+    border-left-color: var(--cte-accent-gold);
+    background: linear-gradient(90deg, rgba(197, 160, 101, 0.2), transparent);
+}
+.cte-floor-panel { display: none; padding: 10px; background: rgba(0,0,0,0.3); }
+.cte-room-tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 8px;
+    margin: 3px;
+    border: 1px solid var(--cte-border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.cte-room-tag:hover {
+    border-color: var(--cte-accent-gold);
+    background: var(--cte-accent-gold);
+    color: #000;
+}
+
+/* 角色资料卡内部样式 */
+.cte-profile-content {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    padding-bottom: 15px;
+}
+
+.cte-profile-avatar-container {
+    flex-shrink: 0;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.cte-profile-avatar-wrapper {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid var(--cte-accent-gold);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.cte-profile-avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0;
+    border: none;
+}
+
+.cte-profile-avatar-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.cte-user-avatar-glow {
+    animation: glowPulse 2s infinite ease-in-out;
+    box-shadow: 0 0 15px var(--cte-accent-gold);
+}
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 15px var(--cte-accent-gold); border-color: #c5a065; }
+    50% { box-shadow: 0 0 30px #fdd835, 0 0 10px #fdd835 inset; border-color: #fff; }
+    100% { box-shadow: 0 0 15px var(--cte-accent-gold); border-color: #c5a065; }
+}
+
+#cte-avatar-upload-btn {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.7);
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.cte-profile-avatar-wrapper:hover #cte-avatar-upload-btn { opacity: 1; }
+
+#cte-avatar-delete-btn {
+    background: transparent;
+    border: none;
+    color: #ff4d4f;
+    cursor: pointer;
+    font-size: 18px;
+    display: none;
+    transition: transform 0.2s;
+}
+#cte-avatar-delete-btn:hover { transform: scale(1.2); }
+
+.cte-profile-info { flex-grow: 1; }
+
+#cte-profile-name {
+    margin: 0 0 15px 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--cte-accent-gold);
+    border-bottom: 2px solid var(--cte-border-color);
+    padding-bottom: 5px;
+}
+
+.cte-profile-grid { display: flex; gap: 20px; margin-bottom: 15px; }
+
+.cte-profile-item, .cte-profile-full-item { display: flex; flex-direction: column; }
+
+.cte-profile-item .label, .cte-profile-full-item .label {
+    font-size: 12px;
+    color: #dddddd;
+    margin-bottom: 3px;
+    font-weight: normal;
+}
+
+.cte-profile-item .value, .cte-profile-full-item .value {
+    font-size: 16px;
+    color: #ffffff !important;
+    font-weight: 500;
+}
+
+.cte-profile-full-item { margin-bottom: 15px; }
+
+.cte-profile-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.05);
+    padding: 10px;
+    border-radius: 4px;
+    border-left: 2px solid var(--cte-border-color);
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .cte-profile-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    .cte-activity-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .cte-profile-avatar-container {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .cte-profile-avatar-wrapper { width: 120px; height: 120px; }
+    .cte-profile-info { width: 100%; text-align: left; }
+    #cte-profile-name { text-align: center; font-size: 1.8rem; }
+    .cte-profile-grid { justify-content: space-between; }
+    
+    .cte-national-controls {
+        flex-direction: column;
+    }
+    .cte-national-controls .cte-action-btn {
+        max-width: none;
+    }
+    
+    .cte-go-national-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
+
+/* --- Schedule / Terminal View Styles --- */
+
+.cte-timeline {
+    /* Updated for Terminal View integration */
+    padding: 20px 0 20px 40px;
+    border-left: 2px solid var(--cte-border-color);
+}
+
+.cte-timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.cte-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -46px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    background: var(--cte-bg-dark);
+    border: 2px solid var(--cte-accent-gold);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.cte-timeline-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-left: 3px solid var(--cte-accent-gold);
+    padding: 12px;
+    border-radius: 0 4px 4px 0;
+    transition: transform 0.2s, background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--cte-font-mono);
+}
+
+.cte-timeline-card:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cte-timeline-content {
+    font-size: 13px;
+    color: var(--cte-text-main); 
+    flex: 1;
+    margin-right: 15px;
+}
+
+.cte-schedule-exec-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--cte-accent-gold);
+    color: var(--cte-accent-gold);
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.cte-schedule-exec-btn:hover {
+    background: var(--cte-accent-gold);
+    color: #000;
+}
+
+/* Participant Grid */
+.cte-participant-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.cte-participant-checkbox {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.05);
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 13px;
+    user-select: none;
+}
+
+.cte-participant-checkbox:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.cte-participant-checkbox input {
+    margin-right: 8px;
+    accent-color: var(--cte-accent-gold);
+}
+
+/* ==========================================================================
+   RPG MANAGER STYLES
+   ========================================================================== */
+
+/* RPG 容器 */
+.cte-rpg-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    background: var(--cte-bg-dark);
+    font-family: var(--cte-font-sans);
+    color: var(--cte-gold-100);
+}
+
+/* 侧边栏 */
+.cte-rpg-sidebar {
+    width: 80px;
+    height: 100%;
+    border-right: 1px solid rgba(212, 175, 55, 0.1);
+    background: rgba(18, 18, 18, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 20px;
+    z-index: 20;
+}
+
+.cte-rpg-logo {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--cte-accent-gold);
+    transform: rotate(45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+.cte-rpg-logo span {
+    transform: rotate(-45deg);
+    font-family: var(--cte-font-display);
+    font-weight: bold;
+    color: var(--cte-accent-gold);
+    font-size: 20px;
+}
+
+.cte-rpg-nav-btn {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border: none;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    border-radius: 4px;
+}
+.cte-rpg-nav-btn:hover { color: var(--cte-accent-gold); background: rgba(255,255,255,0.05); }
+.cte-rpg-nav-btn.active { color: var(--cte-accent-gold); text-shadow: 0 0 8px rgba(212,175,55,0.6); }
+.cte-rpg-nav-btn.active::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    width: 3px;
+    height: 100%;
+    background: var(--cte-accent-gold);
+}
+
+/* 主内容区 */
+.cte-rpg-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 顶部 HUD */
+.cte-rpg-hud {
+    height: 60px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    background: rgba(0,0,0,0.3);
+}
+
+.cte-rpg-res-group { display: flex; gap: 30px; }
+.cte-rpg-res-item { display: flex; gap: 10px; align-items: center; }
+.cte-rpg-res-icon { 
+    width: 30px; height: 30px; 
+    border-radius: 50%; 
+    background: #1a1a1a; 
+    border: 1px solid rgba(255,255,255,0.1); 
+    display: flex; align-items: center; justify-content: center; 
+    font-size: 14px;
+}
+.cte-rpg-res-val { font-family: var(--cte-font-mono); font-size: 14px; font-weight: bold; }
+.cte-rpg-res-label { font-size: 9px; text-transform: uppercase; color: #666; display: block;}
+
+/* 终端视图 (Now Schedule) */
+.cte-rpg-terminal-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* 修改：使用变量代替硬编码渐变，以支持白底主题 */
+    background: var(--cte-scroll-layer-bg);
+    position: relative;
+}
+
+.cte-rpg-input-area {
+    padding: 20px;
+    background: rgba(0,0,0,0.8);
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    gap: 10px;
+}
+
+/* 阵容卡片视图 */
+.cte-rpg-view { display: none; padding: 20px; overflow-y: auto; height: 100%; box-sizing: border-box;}
+.cte-rpg-roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.cte-rpg-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 15px;
+    position: relative;
+    transition: all 0.3s;
+}
+.cte-rpg-card:hover {
+    border-color: var(--cte-accent-gold);
+    background: rgba(255,255,255,0.05);
+}
+/* 卡片装饰角 */
+.cte-rpg-card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 6px; border-top: 1px solid var(--cte-accent-gold); border-left: 1px solid var(--cte-accent-gold); }
+.cte-rpg-card::after { content: ''; position: absolute; bottom: 0; right: 0; width: 6px; height: 6px; border-bottom: 1px solid var(--cte-accent-gold); border-right: 1px solid var(--cte-accent-gold); }
+
+.cte-rpg-avatar-box {
+    width: 60px; height: 60px;
+    border: 1px solid #333;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+.cte-rpg-role-tag {
+    position: absolute; bottom: -5px; 
+    background: #000; color: var(--cte-accent-gold); 
+    font-family: var(--cte-font-mono); font-size: 9px; 
+    padding: 0 4px; border: 1px solid var(--cte-accent-gold);
+}
+
+.cte-rpg-stat-row { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cte-rpg-stat-bar-container .label { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 2px; display: flex; justify-content: space-between; }
+.cte-rpg-stat-bar-container .bar-bg { width: 100%; height: 3px; background: #222; }
+.cte-rpg-stat-bar-container .bar-fill { height: 100%; box-shadow: 0 0 5px currentColor; }
+
+.cte-rpg-card-footer {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin-top: 10px;
+    padding-top: 5px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.cte-rpg-action-icon {
+    background: none; border: none; color: #555; cursor: pointer; transition: color 0.2s;
+}
+.cte-rpg-action-icon:hover { color: var(--cte-accent-gold); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ==========================================================================
+   HEARTBEAT MANAGEMENT STYLES (PINK THEME ISOLATION)
+   Namespace: #cte-layer-heartbeat
+   ========================================================================== */
+
+#cte-layer-heartbeat {
+    background-color: #F0F8FF !important; /* Force light blue background */
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #333 !important;
+}
+
+#cte-layer-heartbeat .cte-hb-container {
+    width: 100%;
+    max-width: 800px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 5px solid #FFD1DC;
+    margin: 20px auto;
+}
+
+#cte-layer-heartbeat .cte-hb-header {
+    background-color: #FFB6C1;
+    padding: 15px 20px;
+    text-align: center;
+    border-bottom: 5px solid #FFD1DC;
+}
+
+#cte-layer-heartbeat .cte-hb-header h1 {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    color: #fff;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+#cte-layer-heartbeat .cte-hb-content {
+    padding: 20px;
+}
+
+#cte-layer-heartbeat .cte-hb-section-title {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    color: #E75480;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
+    margin-bottom: 15px;
+    border-bottom: 3px dashed #FFD1DC;
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+#cte-layer-heartbeat .cte-hb-section-title i {
+    margin-right: 10px;
+}
+
+#cte-layer-heartbeat .cte-hb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+#cte-layer-heartbeat .cte-hb-activity-card {
+    background-color: #FFF0F5;
+    border-radius: 15px;
+    padding: 15px;
+    border: 2px solid #FFD1DC;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#cte-layer-heartbeat .cte-hb-activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(231, 84, 128, 0.2);
+}
+
+#cte-layer-heartbeat .cte-hb-activity-icon {
+    font-size: 2.5rem;
+    color: #E75480;
+    margin-bottom: 10px;
+}
+
+#cte-layer-heartbeat .cte-hb-activity-name {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+#cte-layer-heartbeat .cte-hb-activity-description {
+    font-size: 0.85rem;
+    color: #777;
+    margin-bottom: 15px;
+    min-height: 3em;
+}
+
+#cte-layer-heartbeat .cte-hb-assign-button {
+    padding: 8px 15px;
+    background-color: #FF69B4;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+#cte-layer-heartbeat .cte-hb-assign-button:hover {
+    background-color: #E75480;
+}
+
+/* Heartbeat Modal Styles (Now Global/UI Layer) */
+.cte-hb-modal {
+    display: none;
+    position: absolute; /* Relative to #cte-esport-panel */
+    z-index: 2000;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto; /* Required as UI layer has pointer-events: none */
+}
+
+.cte-hb-modal.active {
+    display: flex;
+}
+
+.cte-hb-modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border: 5px solid #FFD1DC;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    animation: fadeIn 0.5s;
+    color: #333;
+}
+
+.cte-hb-modal h2 {
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #E75480;
+}
+
+.cte-hb-member-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.cte-hb-member-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.cte-hb-member-item:hover {
+    transform: scale(1.05);
+}
+
+.cte-hb-member-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid #FFD1DC;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #eee;
+}
+
+.cte-hb-member-item.selected .cte-hb-member-avatar {
+    border-color: #FF69B4;
+    box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.3);
+}
+
+.cte-hb-member-name {
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.cte-hb-member-item.selected .cte-hb-member-name {
+    color: #E75480;
+}
+
+.cte-hb-close-button {
+    margin-top: 0;
+    padding: 8px 20px;
+    background-color: #aaa;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   RPG ALERT STYLES (Added)
+   ========================================================================== */
+
+.cte-rpg-warning-box {
+    margin-top: 10px;
+    background: rgba(236, 72, 153, 0.15); /* Pinkish background */
+    border: 1px solid #ec4899;
+    border-radius: 4px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #ec4899;
+    animation: pulseWarning 2s infinite;
+}
+
+.cte-rpg-warning-box span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cte-heartbeat-shortcut {
+    background: #ec4899;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: transform 0.2s;
+}
+
+.cte-heartbeat-shortcut:hover {
+    transform: scale(1.1);
+    background: #db2777;
+}
+
+@keyframes pulseWarning {
+    0% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(236, 72, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
